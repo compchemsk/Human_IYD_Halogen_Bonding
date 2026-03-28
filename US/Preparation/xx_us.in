@@ -1,0 +1,22 @@
+prod 25 ns at 300K I-Tyr
+ &cntrl
+  imin=0, ntx=1, irest=0,
+  ntc=2, ntf=2, tol=0.0000001,
+  nstlim=12500000, ntt=3, gamma_ln=1.0,
+  temp0=300.0,
+  ntpr=10000, ntwr=10000, ntwx=10000,
+  dt=0.002, ig=-1,
+  ntb=2, cut=10.0, ioutfm=1, ntxo=2,
+  nmropt=1, ntp=3, csurften=3, gamma_ten=0.0, ninterface=2,
+ /
+ &wt type='DUMPFREQ', istep1=10000 /
+ &wt type='END', /
+DISANG=xx_us_dist.RST
+DUMPAVE=xx_us.dat
+LISTIN=POUT
+LISTOUT=POUT
+ /
+ /
+ &ewald
+  skinnb=3.0,
+ /
