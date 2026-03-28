@@ -268,6 +268,16 @@ qm-input.sh ----> prepare jobs for QM calculations using gaussian16.
 <br>
 qm-snap.sh ----> progress_coord frame_number distance (nm) angle (deg.)
 <br>
-role-halo.sh ----> output: role-halo.dat (resname progress_coord frame distance (nm) angle (deg.) distance (A) angle (deg.) E(2) (kcal/mol) 
+role-halo.sh ----> output: role-halo.dat (resname progress_coord frame distance (nm) angle (deg.) distance (A) angle (deg.) E(2) (kcal/mol)) 
 <br>
 x-y-z.py ----> plot QM verfied halogen bonding
+
+<br>
+<br>
+<br>
+
+H. One interesting question comes at this stage. From ensemble of structures obtained from umbrella sampling simulation, we first identify structures which show halogen bonding interaction based on structural criteria followed by QM validation of the obtained halogen bonding interactions. The QM-based validation seems important for cases like Cl-Tyr where false positive results often arise from only structural validation. However, even with those true halogen bonding interactions, how many of them contribute to the free-energy landscape of the protein-ligand unbinding event. On the previously contructed free-energy landscape, we identify the contributions coming from substrate solvation, halogen bonding, hydrogen bonding, and steric crowding. The in-house codes are provided in the FES_Halo_Bond directory. User can make the codes executable and run them.
+
+<br>
+<br>
+<br>
