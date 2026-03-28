@@ -9,12 +9,12 @@ from MDAnalysis.lib.distances import distance_array
 # =========================
 # USER INPUT
 # =========================
-topology_file = "4ttc-unbiased-fmnh2-ityr.parm7"
+topology_file = "I-Tyr-binding.parm7"
 trajectory_file = "sim1.nc"
 
 DIST_CUTOFF = 6.0
 ATOM_PAIR_THRESHOLD = 4
-EDGE_THRESHOLD = 80.0
+EDGE_THRESHOLD = 70.0
 NPROC = 40
 
 # =========================
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     # PREPARE WEIGHTS (distance)
     # =========================
     for u_, v_, d in G.edges(data=True):
-        d["inv_weight"] = 100.0 - d["weight"]
+        d["inv_weight"] = 1.0 / d["weight"]
 
     # =========================
     # CENTRALITY ANALYSIS
@@ -144,18 +144,74 @@ if __name__ == "__main__":
         print(f"Resid {G.nodes[node]['resid']} ({G.nodes[node]['resname']}): {val:.6f}")
 
     # =========================
-    # DOMINANT PATH (N → C)
+    # DOMINANT NETWORK ANALYSIS
     # =========================
-    start_node = 0
-    end_node = n_res - 1
+    print("\nConstructing dominant interaction network (shortest paths + centrality + strong edges)...")
 
-    try:
-        path = nx.shortest_path(G, source=start_node, target=end_node, weight="inv_weight")
-        print("\nDominant N → C residue path:")
-        print([G.nodes[n]["resid"] for n in path])
-    except nx.NetworkXNoPath:
-        print("\nNo path found!")
-        path = []
+    dominant_nodes = []
+    path = []
+
+    if G.number_of_edges() == 0:
+        print("No edges in graph!")
+
+    else:
+        # -------------------------
+        # 1. Convert weight → distance
+        # -------------------------
+        for u_, v_, d in G.edges(data=True):
+            d["dist"] = 1.0 / d["weight"]
+
+        # -------------------------
+        # 2. Shortest path (N → C)
+        # -------------------------
+        start_node = 0
+        end_node = n_res - 1
+
+        try:
+            path = nx.shortest_path(G, source=start_node, target=end_node, weight="dist")
+            print("\nShortest path (N to C):")
+            print([G.nodes[n]["resid"] for n in path])
+        except nx.NetworkXNoPath:
+            print("\nNo path between N and C terminal!")
+            path = []
+
+        # -------------------------
+        # 3. Key residues (Betweenness)
+        # -------------------------
+        top_k = 10
+        sorted_bet = sorted(bet_cent.items(), key=lambda x: x[1], reverse=True)
+        key_nodes = [node for node, _ in sorted_bet[:top_k]]
+
+        print("\nTop Betweenness Residues:")
+        print([G.nodes[n]["resid"] for n in key_nodes])
+
+        # -------------------------
+        # 4. Strong-edge subnetwork
+        # -------------------------
+        weights = [d["weight"] for _, _, d in G.edges(data=True)]
+        threshold = np.percentile(weights, 90)  # top 10%
+
+        G_strong = nx.Graph()
+        for u, v, d in G.edges(data=True):
+            if d["weight"] >= threshold:
+                G_strong.add_edge(u, v, weight=d["weight"])
+
+        print(f"\nStrong-edge threshold: {threshold:.2f}")
+
+        # -------------------------
+        # 5. Combine dominant nodes
+        # -------------------------
+        dominant_nodes = set()
+
+        dominant_nodes.update(path)
+        dominant_nodes.update(key_nodes)
+        dominant_nodes.update(G_strong.nodes())
+
+        dominant_nodes = list(dominant_nodes)
+
+        print("\nCombined dominant residues:")
+        print(sorted([G.nodes[n]["resid"] for n in dominant_nodes]))
+
 
     # =========================
     # VISUALIZATION
@@ -169,8 +225,8 @@ if __name__ == "__main__":
     # All edges (grey)
     nx.draw_networkx_edges(G, pos, edge_color="grey", width=1)
 
-    # Highlight dominant path (black thick)
-    if path:
+    # Highlight shortest path (black thick)
+    if path and len(path) > 1:
         path_edges = list(zip(path[:-1], path[1:]))
         nx.draw_networkx_edges(
             G, pos,
@@ -179,11 +235,57 @@ if __name__ == "__main__":
             width=3
         )
 
+    # Highlight strong edges (slightly thicker grey/black mix)
+    strong_edges = [(u, v) for u, v, d in G.edges(data=True) if d["weight"] >= threshold]
+    nx.draw_networkx_edges(
+        G, pos,
+        edgelist=strong_edges,
+        width=2
+    )
+
+    # Highlight key residues (betweenness)
+    nx.draw_networkx_nodes(
+        G, pos,
+        nodelist=key_nodes,
+        node_size=300
+    )
+
     # Labels
     labels = {i: G.nodes[i]["resid"] for i in G.nodes}
     nx.draw_networkx_labels(G, pos, labels, font_size=8)
 
-    plt.title("Residue Interaction Network (RIN)")
+    plt.title("Dominant Residue Interaction Network")
     plt.axis("off")
+    plt.tight_layout()
+    plt.show()
+
+
+    # =========================
+    # HEATMAP OF RIN (80–100%)
+    # =========================
+    print("\nGenerating heatmap...")
+
+    heatmap_matrix = np.zeros((n_res, n_res))
+
+    for u, v, data in G.edges(data=True):
+        weight = data["weight"]
+        heatmap_matrix[u, v] = weight
+        heatmap_matrix[v, u] = weight
+
+    plt.figure(figsize=(8, 6))
+
+    im = plt.imshow(
+        heatmap_matrix,
+        vmin=80, vmax=100,
+        interpolation='nearest'
+    )
+
+    cbar = plt.colorbar(im)
+    cbar.set_label("Contact Persistence (%)")
+
+    plt.xlabel("Residue Index")
+    plt.ylabel("Residue Index")
+    plt.title("Residue Interaction Network Heatmap (80–100%)")
+
     plt.tight_layout()
     plt.show()
