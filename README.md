@@ -231,4 +231,4 @@ Run the files in this sequence as below:
 <br>
 <br>
 
-Once, umbrella sampling simulations are done, we will use non-parametric reweighting scheme (npwham) (Please Cite: https://doi.org/10.1038/s43588-022-00389-9) to construct the PMF profiles. Run the npwham-run.sh code to get the PMF files.
+Once, umbrella sampling simulations are done, we will use non-parametric reweighting scheme (npwham) (Please Cite: https://doi.org/10.1038/s43588-022-00389-9) to construct the PMF profiles. Run the npwham-run.sh code to get the PMF files. After running for all the obtained pathways, run pmf-plot.py to obtain a combined plot.
