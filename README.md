@@ -129,3 +129,36 @@ python k_PMF_plot.py
 
 <br>
 
+5. Motion of internal degrees of freedom:
+<br>
+To obtain free energy landscape spanned by internal degrees of freedom, run the following codes in the same directory as before. 
+<br>
+
+for np in {0.1,0.25,0.5,1,2,3,4}
+<br>
+do
+<br>
+cp int-coord.sh k${np}
+<br>
+cd k${np}
+<br>
+chmod +x int-coord.sh
+<br>
+sed -i "s/kxxx/k${np}/g" int-coord.sh
+<br>
+./int-coord.sh
+<br>
+cd ../
+<br>
+done
+
+<br>
+<br>
+
+After the above code, go inside each directory (k0.1,k0.25,etc.) manually, and run:
+<br>
+chmod +x int-coord-fes.sh
+<br>
+./int-coord-fes.sh
+
+<br>
