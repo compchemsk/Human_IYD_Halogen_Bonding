@@ -250,3 +250,24 @@ To run the halogen bonding analysis, run first the halogen-bond.sh script and sa
 <br>
 
 The halogen bonding should always be validated using quantum mechanical analysis. So, for each residue identified to promote halogen bonding as per the structural criteria is taken further. Now, for each such residue, the snapshots where they are identified to form halogen bonding, are subjected to DFT calculations followed by natural bonding orbital (NBO) analysis. The NBO analysis gives 2nd order perturbation energy in kcal/mol which is a rough estimation of the amount of charge transfer during halogen bond formation. This is a QM cluster calculation and protein environment is approximated using implicit water solvent with dielectric constant 4.0. The input files and codes are provided in the QM-Validation directory inside Halogen_Bond directory.  
+
+<br>
+<br>
+
+The output of individual files are written here:
+<br>
+2d-halo-final.sh ----> output: 2d-halo-ener.dat (Distance (A) Angle (degree) E(2) (kcal/mol))
+<br>
+AIM-NCI.sh ----> output: Will open AIM and NCI plots directly in the vmd.
+<br>
+dis-ang.py ----> plot 2d-halo-ener.dat (distance vs angle with colored via E(2) energy)
+<br>
+ener-ext.py ----> how much is the energy for a particular residue and with which atom halogen bond is formed?
+<br>
+qm-input.sh ----> prepare jobs for QM calculations using gaussian16.
+<br>
+qm-snap.sh ----> progress_coord frame_number distance (nm) angle (deg.)
+<br>
+role-halo.sh ----> output: role-halo.dat (resname progress_coord frame distance (nm) angle (deg.) distance (A) angle (deg.) E(2) (kcal/mol) 
+<br>
+x-y-z.py ----> plot QM verfied halogen bonding
