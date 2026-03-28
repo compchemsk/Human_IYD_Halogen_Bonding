@@ -162,3 +162,16 @@ chmod +x int-coord-fes.sh
 ./int-coord-fes.sh
 
 <br>
+<br>
+
+6. During unbinding of a substrate from the active site, e.g., I-Tyr, crucial hydrogen bonding interactions are broken. To monitor the sequence of events, run the following code, after going inside each directory (k0.1,k0.25,etc.) manually:
+
+<br>
+<br>
+chmod +x seq-of-events.sh
+<br>
+./seq-of-events.sh
+
+<br>
+<br>
+Same analysis were repeated for Cl-Tyr and I-Phenol to obtain the optimal force constant values in each case. All these codes are available in the Goldilocks_Limit directory. 
