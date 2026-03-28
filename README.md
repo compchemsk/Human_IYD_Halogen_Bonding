@@ -290,4 +290,4 @@ I. One interesting question comes at this stage. From ensemble of structures obt
 <br>
 <br>
 
-J. Substrate Binding Large-timescale Unbiased Simulations:
+J. Substrate Binding Large-timescale Unbiased Simulations: To study the way how enzyme recognizes its substrate, we place two substrates (corresponding to two active sites of the enzyme) 50 A away from the enzyme. The corresponding parameter files are kept in the Subs_Bind_Simulation directory. 
