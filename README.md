@@ -232,3 +232,21 @@ Run the files in this sequence as below:
 <br>
 
 Once, umbrella sampling simulations are done, we will use non-parametric reweighting scheme (npwham) (Please Cite: https://doi.org/10.1038/s43588-022-00389-9) to construct the PMF profiles. Run the npwham-run.sh code to get the PMF files. After running for all the obtained pathways, run pmf-plot.py to obtain a combined plot.
+
+<br>
+<br>
+<br>
+
+G. On these ensemble of structures obtained from umbrella sampling simulation, we next performed analysis for halogen bonding and hydrogen bonding interactions. A frame-wise analysis was carried out using an in-house MDTraj-based script to identify halogen bonding interactions along the substrate unbinding pathway. Halogen bonds were defined based on two structural criteria: a donor–acceptor distance cutoff specific to atom types and a near-linear C–X–acceptor angle (140°–180°), ensuring proper σ-hole directionality. Potential acceptors included nitrogen, oxygen, sulfur atoms, and aromatic residues in the active site. Since classical force fields cannot accurately capture polarization effects, selected snapshots were analyzed using QM-cluster calculations. The reliability of this approach was validated against ONIOM QM/MM calculations, showing comparable interaction energies. Halogen bonding was further quantified using NBO analysis, where stabilization energies ≥ 0.5 kcal/mol were considered indicative of transient interactions. Additionally, ALMO-EDA was employed to decompose interaction energies and assess contributions from polarization and charge transfer. The input files, in-house Python codes are provided in the Halogen_Bond directory.
+
+<br>
+<br>
+<br>
+
+To run the halogen bonding analysis, run first the halogen-bond.sh script and save the output in halo.out file. This file will contain information about along the progress coordinate where halogen bonding appears first, which residues of protein take part in halogen bonding, and based on structural criteria how halogen bonding emerges. After this, individual amino acids can be identified using halo-amino.sh and frequency of halogen bonding using halo-count.sh files. Finally, which halogen bonds are really strong can be identified by using halo-plot-data.py and then halo-along-pathway.py files. The second quadrant of the plot will represent most stable halogen bonds as per structural criteria.
+
+<br>
+<br>
+<br>
+
+The halogen bonding should always be validated using quantum mechanical analysis. So, for each residue identified to promote halogen bonding as per the structural criteria is taken further. Now, for each such residue, the snapshots where they are identified to form halogen bonding, are subjected to DFT calculations followed by natural bonding orbital (NBO) analysis. The NBO analysis gives 2nd order perturbation energy in kcal/mol which is a rough estimation of the amount of charge transfer during halogen bond formation. This is a QM cluster calculation and protein environment is approximated using implicit water solvent with dielectric constant 4.0. The input files and codes are provided in the QM-Validation directory inside Halogen_Bond directory.  
