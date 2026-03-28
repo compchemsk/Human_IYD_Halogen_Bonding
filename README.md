@@ -218,15 +218,17 @@ Same analysis were performed for Cl-Tyr and I-Phenol systems.
 <br>
 <br>
 
-F. Umbrella sampling (US) simulations were performed across the progress coordinate using multiple force constants to ensure adequate sampling. Initial tests revealed that low force constants led to poor window overlap, while high values caused overbias. Based on this, an optimal scheme was adopted: a force constant of 10 kcal·mol⁻¹·Å⁻² with finer spacing (0.2 Å) at early stages, and 2.5 kcal·mol⁻¹·Å⁻² with wider spacing (1 Å) at larger distances. Each window was then simulated for 25 ns, and PMFs were computed using non-parametric reweighting, reducing binning artefacts and yielding smoother free energy profiles. The input files and codes are given in the US directory.
+F. Umbrella sampling (US) simulations were performed across the progress coordinate using multiple force constants to ensure adequate sampling. Initial tests revealed that low force constants led to poor window overlap, while high values caused overbias. Based on this, an optimal scheme was adopted: a force constant of 10 kcal·mol⁻¹·Å⁻² with finer spacing (0.2 Å) at early stages, and 2.5 kcal·mol⁻¹·Å⁻² with wider spacing (1 Å) at larger distances (Optimum values can be identified by varrying the force constant, window size, and extent of simulation). Each window was then simulated for 25 ns, and PMFs were computed using non-parametric reweighting, reducing binning artefacts and yielding smoother free energy profiles. The input files and codes are given in the US directory.
 
 <br>
 <br>
 Run the files in this sequence as below:
 1. Create dis.dat file using cpptraj from parameter and trajectory file.
 <br>
-2. Run: a) target.sh, b) rst7-input.sh, c) name-change.sh, d) job-us-run.sh (to run use: chmod +x filename.sh and then ./filename.sh )  
+2. Run: a) target.sh, b) rst7-input.sh, c) name-change.sh, d) job-us-run.sh (to run use: chmod +x filename.sh and then ./filename.sh )  (All codes are given in the US/Preparation directory.)
 
 <br>
 <br>
 <br>
+
+Once, umbrella sampling simulations are done, we will use non-parametric reweighting scheme (npwham) to construct the PMF profiles. 
