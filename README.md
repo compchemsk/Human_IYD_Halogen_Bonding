@@ -31,3 +31,66 @@ chmod +x Pull_jobs.sh
 
 All the files required by the above code are present in the iSMD directory (change job.sh file as per your own computing node configurations). 
 
+<br>
+<br>
+<br>
+
+C. After the iSMD simulations are done, it is now time to check which force constant value is the Goldilocks limit for the ligand unbinding. Here, we use 6 different analyses to validate an appropriate force constant. For each force constant, we should have different directories (e.g., k0.1 to k4).  
+<br>
+1. Work distribution:
+<br>
+For work distribution accross different force constant, run the following codes in the sequence from the directory where k0.1 to k4 directories are present:
+<br>
+chmod +x Distribution.sh
+<br>
+./Distribution.sh
+<br>
+python work-dist-plot.py
+
+<br>
+A nice plot in python will appear showing work distribution. 
+
+<br>
+<br>
+
+2. Free energy distribution:
+<br>
+To obtain free energy distribution, run the following codes in the same directory as before.
+<br>
+python free_energy_smd.py
+
+
+<br>
+<br>
+<br>
+
+3. Force distribution:
+<br>
+To obtain force distribution, run the following codes in the same directory as before.
+<br>
+
+for np in {0.1,0.25,0.5,1,2,3,4}
+<br>
+do
+<br>
+cp k_F.sh k${np}
+<br>
+cd k${np}
+<br>
+chmod +x k_F.sh
+<br>
+./k_F.sh
+<br>
+cd ../
+<br>
+done
+
+<br>
+<br>
+
+After the above code, run:
+<br>
+python k_F_plot.py
+
+<br>
+
