@@ -175,3 +175,15 @@ chmod +x seq-of-events.sh
 <br>
 <br>
 Same analysis were repeated for Cl-Tyr and I-Phenol to obtain the optimal force constant values in each case. All these codes are available in the Goldilocks_Limit directory. 
+
+
+<br>
+<br>
+<br>
+
+D. After running non-equilibrium simulations (iSMD), we can extract kinetic information from them using Dudko-Hummer-Szabo (DHS) model. The codes are given in the DHS directory. To run the codes, the user needs 4 inputs as: rupture force values (from iSMD simulations), corresponding standard deviation values, substrate unbinding time (from simulation trajectories), and corresponding standard deviation values.   
+<br>
+<br>
+<br>
+
+E. 
