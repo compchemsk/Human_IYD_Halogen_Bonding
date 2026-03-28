@@ -310,3 +310,8 @@ At this point, we need to identify which the underlying free energy landscape fo
 
 <br>
 feature_selection.py ---> lagfind.py ---> VAMP.py ---> feature_filter.py ---> lagfind_filter.py ---> MSM.py ---> kmeans.py ---> CK.py ---> TPT.py
+
+<br>
+<br>
+
+Thank you. Hope this work helps you. Cite my work and other software related references if this work helps you.
