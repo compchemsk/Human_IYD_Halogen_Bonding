@@ -17,6 +17,8 @@ A. The parameter files were created in the same process as discussed in the Huma
 B. We first run a 1 microsec classical MD simulation for each system. From the simulation, we pick up a minimum free energy structure from the free energy landscape spanned by first two principal components. The detailed methodology and corresponding commands as well as codes are provided in the Human_IYD_Dynamics repository. At this stage, we are interested in isotropic steered MD (iSMD) simulations. For, iSMD simulations, a pre-equilibration step was performed. The input files are given in the iSMD directory. To run the simulation, follow the regular commands or commands are provided in the Human_IYD_Dynamics directory. 
 
 <br>
+<br>
+<br>
 
 The above simulation will generate a restart file named as Pre-Equilibration.rst7 which will be used in the next stage for pulling simulations. We will use different force constants for performing pulling simulations ranging from 0.1 to 4 kcal.mol-1.A-2. At each force constant value, we will run 100 pulling simulations using the code Pull_jobs.sh using the following command:
 
@@ -315,3 +317,302 @@ feature_selection.py ---> lagfind.py ---> VAMP.py ---> feature_filter.py ---> la
 <br>
 
 Thank you. Hope this work helps you. Cite my work and other software related references if this work helps you.
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Human_IYD_Halogen_Bonding</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 40px;
+        max-width: 1000px;
+    }
+    h1, h2, h3 {
+        color: #2c3e50;
+    }
+    code, pre {
+        background: #f4f4f4;
+        padding: 8px;
+        display: block;
+        overflow-x: auto;
+    }
+    .inline {
+        display: inline;
+        padding: 2px 4px;
+    }
+    hr {
+        margin: 30px 0;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Human_IYD_Halogen_Bonding</h1>
+
+<p>
+Human IYD shows no halogen bonding in crystal structures, yet kinetics reveal strong halogen-dependent binding. 
+Heavier halotyrosines bind tighter and associate faster than lighter halotyrosines, while <i>koff</i> changes little, 
+suggesting halogens mainly boost <i>kon</i> via transient interactions. Static structures miss these dynamic effects.
+</p>
+
+<p><b>Citation:</b> S. Karmakar and S. Mishra, <i>J. Chem. Inf. Model.</i>, 2026 (under review)</p>
+
+<hr>
+
+<h2>Background</h2>
+
+<p>
+Previous studies showed that halogen bonding is absent in the active site. However, kinetic trends indicate a hidden role in substrate recognition.
+</p>
+
+<ul>
+<li>I-Tyr → Strong halogen + strong hydrogen bonding</li>
+<li>Cl-Tyr → Weak halogen + strong hydrogen bonding</li>
+<li>I-Phenol → Strong halogen + weak hydrogen bonding</li>
+</ul>
+
+<hr>
+
+<h2>A. System Preparation</h2>
+
+<p>
+Parameter files were generated using:
+<a href="https://github.com/compchemsk/Human_IYD_Dynamics.git">Human_IYD_Dynamics repository</a>.
+</p>
+
+<hr>
+
+<h2>B. Classical MD and iSMD Setup</h2>
+
+<ol>
+<li>Run <b>1 μs classical MD</b></li>
+<li>Extract minimum free energy structure (PCA)</li>
+<li>Perform pre-equilibration</li>
+</ol>
+
+<p><b>Output file:</b></p>
+<pre>Pre-Equilibration.rst7</pre>
+
+<p>This file is used for pulling simulations.</p>
+
+<h3>Pulling Simulations</h3>
+
+<ul>
+<li>Force constants: 0.1–4 kcal·mol⁻¹·Å⁻²</li>
+<li>100 simulations per constant</li>
+</ul>
+
+<pre>
+chmod +x Pull_jobs.sh
+./Pull_jobs.sh
+</pre>
+
+<hr>
+
+<h2>C. Goldilocks Force Constant Analysis</h2>
+
+<h3>1. Work Distribution</h3>
+<pre>
+chmod +x Distribution.sh
+./Distribution.sh
+python work-dist-plot.py
+</pre>
+
+<h3>2. Free Energy</h3>
+<pre>python free_energy_smd.py</pre>
+
+<h3>3. Force Distribution</h3>
+<pre>
+for np in {0.1,0.25,0.5,1,2,3,4}
+do
+cp k_F.sh k${np}
+cd k${np}
+chmod +x k_F.sh
+./k_F.sh
+cd ../
+done
+
+python k_F_plot.py
+</pre>
+
+<h3>4. PMF Distribution</h3>
+<pre>
+for np in {0.1,0.25,0.5,1,2,3,4}
+do
+cp k_PMF.sh k${np}
+cd k${np}
+chmod +x k_PMF.sh
+./k_PMF.sh
+cd ../
+done
+
+python k_PMF_plot.py
+</pre>
+
+<h3>5. Internal Coordinates</h3>
+<pre>
+for np in {0.1,0.25,0.5,1,2,3,4}
+do
+cp int-coord.sh k${np}
+cd k${np}
+chmod +x int-coord.sh
+sed -i "s/kxxx/k${np}/g" int-coord.sh
+./int-coord.sh
+cd ../
+done
+</pre>
+
+<h3>6. Sequence of Events</h3>
+<pre>
+chmod +x seq-of-events.sh
+./seq-of-events.sh
+</pre>
+
+<hr>
+
+<h2>D. Kinetic Analysis (DHS)</h2>
+
+<p>
+Inputs required:
+</p>
+<ul>
+<li>Rupture forces</li>
+<li>Force SD</li>
+<li>Unbinding time</li>
+<li>Time SD</li>
+</ul>
+
+<hr>
+
+<h2>E. Pathway Identification (DTW)</h2>
+
+<pre>
+chmod +x int-dist-full.sh
+./int-dist-full.sh
+
+chmod +x rmsd_full.sh
+./rmsd_full.sh
+
+pip install fastdtw scipy seaborn matplotlib numpy
+python DTW_Clustering.py
+</pre>
+
+<p>
+Clustering uses RMSD and COM distance with Ward linkage to identify dominant pathways.
+</p>
+
+<hr>
+
+<h2>F. Umbrella Sampling</h2>
+
+<ul>
+<li>k = 10 (0.2 Å spacing)</li>
+<li>k = 2.5 (1 Å spacing)</li>
+<li>25 ns per window</li>
+</ul>
+
+<pre>
+cpptraj → dis.dat
+
+./target.sh
+./rst7-input.sh
+./name-change.sh
+./job-us-run.sh
+</pre>
+
+<h3>PMF (npWHAM)</h3>
+<pre>
+./npwham-run.sh
+python pmf-plot.py
+</pre>
+
+<hr>
+
+<h2>G. Halogen Bond Analysis</h2>
+
+<p>Criteria: distance + angle (140°–180°)</p>
+
+<pre>
+./halogen-bond.sh → halo.out
+./halo-amino.sh
+./halo-count.sh
+python halo-plot-data.py
+python halo-along-pathway.py
+</pre>
+
+<h3>QM Validation</h3>
+
+<ul>
+<li>DFT + NBO</li>
+<li>E(2) ≥ 0.5 kcal/mol</li>
+</ul>
+
+<hr>
+
+<h2>H. Hydrogen Bond Analysis</h2>
+
+<ul>
+<li>Distance ≤ 3.0 Å</li>
+<li>Angle ≥ 150°</li>
+</ul>
+
+<hr>
+
+<h2>I. Free Energy Contributions</h2>
+
+<p>
+Contributions from:
+</p>
+<ul>
+<li>Solvation</li>
+<li>Halogen bonding</li>
+<li>Hydrogen bonding</li>
+<li>Steric effects</li>
+</ul>
+
+<hr>
+
+<h2>J. Substrate Binding Simulations</h2>
+
+<p>Substrates placed 50 Å away.</p>
+
+<h3>Residue Interaction Network</h3>
+
+<ul>
+<li>Contacts: >4 heavy atoms within 6 Å</li>
+<li>Persistence: >80%</li>
+</ul>
+
+<h3>TICA + MSM Pipeline</h3>
+
+<pre>
+feature_selection.py
+lagfind.py
+VAMP.py
+feature_filter.py
+lagfind_filter.py
+MSM.py
+kmeans.py
+CK.py
+TPT.py
+</pre>
+
+<hr>
+
+<h2>Final Note</h2>
+
+<p>
+Hydrogen and halogen bonding analyses follow the same methodology as unbinding simulations.
+</p>
+
+<p><b>Thank you. Please cite appropriately.</b></p>
+
+</body>
+</html>
