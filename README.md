@@ -186,4 +186,28 @@ D. After running non-equilibrium simulations (iSMD), we can extract kinetic info
 <br>
 <br>
 
-E. 
+E. Now, we have an optimal force constant value as 0.5 kcal/mol.A^2. We also have 100 unbinding trajectories using the same force constant. Hence, at this stage, we want to see how many different pathways emerge for substrate unbinding. To classify distinct substrate unbinding pathways explored in iSMD simulations, we employed Dynamic Time Warping (DTW) to measure similarity between trajectories that may differ in length and progression along the reaction coordinate. Each simulation was represented using two one-dimensional descriptors: substrate RMSD and an internal coordinate (center-of-mass distance between flavin and the substrate). DTW distances were computed separately for these descriptors and then averaged to obtain a composite similarity measure between trajectory pairs. The resulting pairwise distance matrix was subjected to agglomerative hierarchical clustering using Ward’s linkage criterion. The most populated cluster was identified as the dominant unbinding pathway, and a representative trajectory from this cluster was selected as the starting structure for subsequent umbrella sampling simulations. All the codes and inputs are available in the DTW directory. 
+
+<br>
+First run:
+<br>
+chmod +x int-dist-full.sh
+<br>
+./int-dist-full.sh
+
+<br>
+chmod +x rmsd_full.sh
+<br>
+./rmsd_full.sh
+
+<br>
+<br>
+Finally run:
+<br>
+pip install fastdtw scipy seaborn matplotlib numpy
+<br>
+python DTW_Clustering.py
+
+<br>
+<br>
+<br>
