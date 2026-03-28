@@ -141,4 +141,5 @@ plt.legend(fontsize=22, frameon=False)
 #plt.title("DHS vs Bell Model Fits", fontsize=24, fontweight='bold')
 
 plt.tight_layout()
+plt.savefig('kinetics.png')
 plt.show()
