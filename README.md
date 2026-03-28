@@ -1,201 +1,172 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+# 🧬 Human_IYD_Halogen_Bonding
 
-</head>
+Human IYD shows **no halogen bonding in crystal structures**, yet kinetics reveal **strong halogen-dependent binding**. Heavier halotyrosines bind tighter and associate faster than lighter halotyrosines, while *k_off* changes little—suggesting halogens mainly boost *k_on* via **transient interactions**. Static structures miss these dynamic effects.  
+📌 Citation: S. Karmakar and S. Mishra, J. Chem. Inf. Model., 2026 (under review)
 
-<body>
+---
 
-<div class="container">
+## 🔬 Study Overview
 
-<h1>Human_IYD_Halogen_Bonding</h1>
+Previous computational and experimental studies showed **absence of halogen bonding** in the active site. However, kinetic trends suggest a **hidden role during substrate recognition**.
 
+### 🧪 Systems Studied:
+- **I-Tyr** → Strong halogen + hydrogen bonding  
+- **Cl-Tyr** → Weak halogen + strong hydrogen bonding  
+- **I-Phenol** → Strong halogen + weak hydrogen bonding  
 
-<p>
-Human IYD shows no halogen bonding in crystal structures, yet kinetics reveal strong halogen-dependent binding. 
-Heavier halotyrosines bind tighter and associate faster than lighter halotyrosines, while <i>koff</i> changes little, 
-suggesting halogens mainly boost <i>kon</i> via transient interactions.
-</p>
+---
 
-<p class="highlight">
-Citation: S. Karmakar and S. Mishra, J. Chem. Inf. Model., 2026 (under review)
-</p>
+# ⚙️ A. Parameter Preparation
+- Follow protocol from:  
+  https://github.com/compchemsk/Human_IYD_Dynamics.git  
+- Parameter files are available in **Parameters/**
+- MD input files same as previous repository
 
-<h2>Background</h2>
-<p>
-Previous studies showed no halogen bonding in static structures. However, kinetics indicate a hidden role during substrate recognition.
-</p>
+---
 
-<ul>
-<li>I-Tyr → Strong halogen + strong hydrogen bonding</li>
-<li>Cl-Tyr → Weak halogen + strong hydrogen bonding</li>
-<li>I-Phenol → Strong halogen + weak hydrogen bonding</li>
-</ul>
+# 🧭 B. Classical MD & iSMD Setup
 
-<h2>A. System Preparation</h2>
-<p>
-Parameter files were created using the Human_IYD_Dynamics repository.
-</p>
+## 🌀 Step 1: Classical MD
+- Run **1 μs MD simulation** for each system  
+- Extract **minimum free energy structure** using PCA (PC1 vs PC2)
 
-<h2>B. Classical MD and iSMD Setup</h2>
+## 🧩 Step 2: Pre-equilibration for iSMD
+- Input files → iSMD/
+- Run standard MD commands
 
-<ul>
-<li>Run 1 μs MD simulation</li>
-<li>Extract minimum free energy structure</li>
-<li>Perform pre-equilibration</li>
-</ul>
+Output:
+Pre-Equilibration.rst7
 
-<p><b>Output:</b></p>
-<pre>Pre-Equilibration.rst7</pre>
+## 🚀 Step 3: Pulling Simulations (iSMD)
 
-<p>This file is used for pulling simulations.</p>
+Force constants:
+0.1 → 4 kcal·mol⁻¹·Å⁻²
 
-<pre>
-chmod +x Pull_jobs.sh
+Run:
+chmod +x Pull_jobs.sh  
 ./Pull_jobs.sh
-</pre>
 
-<h2>C. Goldilocks Force Constant Analysis</h2>
+---
 
-<h3>1. Work Distribution</h3>
-<pre>
-chmod +x Distribution.sh
-./Distribution.sh
-python work-dist-plot.py
-</pre>
+# 🎯 C. Goldilocks Force Constant Selection
 
-<h3>2. Free Energy Distribution</h3>
-<pre>python free_energy_smd.py</pre>
+Directory structure:
+k0.1 → k4
 
-<h3>3. Force Distribution</h3>
-<pre>
-for np in {0.1,0.25,0.5,1,2,3,4}
-...
-python k_F_plot.py
-</pre>
+## 📊 Work Distribution
+chmod +x Distribution.sh  
+./Distribution.sh  
+python work-dist-plot.py  
 
-<h3>4. PMF Distribution</h3>
-<pre>
-for np in {0.1,0.25,0.5,1,2,3,4}
-...
-python k_PMF_plot.py
-</pre>
+## 📉 Free Energy Distribution
+python free_energy_smd.py  
 
-<h3>5. Internal Degrees of Freedom</h3>
-<pre>
-for np in {0.1,0.25,0.5,1,2,3,4}
-...
-</pre>
+## 💪 Force Distribution
+(loop over k values and run k_F.sh, then python k_F_plot.py)
 
-<h3>6. Sequence of Events</h3>
-<pre>
-chmod +x seq-of-events.sh
-./seq-of-events.sh
-</pre>
+## 🧮 PMF Distribution
+(loop over k values and run k_PMF.sh, then python k_PMF_plot.py)
 
-<h2>D. DHS Kinetics</h2>
-<ul>
-<li>Rupture forces</li>
-<li>Standard deviations</li>
-<li>Unbinding time</li>
-</ul>
+## 🔗 Internal Coordinates
+(loop and run int-coord.sh, then int-coord-fes.sh)
 
-<h2>E. DTW Clustering</h2>
+## 🔄 Sequence of Events
+chmod +x seq-of-events.sh  
+./seq-of-events.sh  
 
-<pre>
-chmod +x int-dist-full.sh
-./int-dist-full.sh
+---
 
-chmod +x rmsd_full.sh
-./rmsd_full.sh
+# 📉 D. Kinetics via DHS Model
+Inputs:
+- Rupture force
+- Force SD
+- Unbinding time
+- Time SD
 
-pip install fastdtw scipy seaborn matplotlib numpy
-python DTW_Clustering.py
-</pre>
+---
 
-<p>
-Clustering based on RMSD and COM distance using Ward linkage.
-</p>
+# 🧭 E. Pathway Identification (DTW)
 
-<h2>F. Umbrella Sampling</h2>
+chmod +x int-dist-full.sh  
+./int-dist-full.sh  
 
-<ul>
-<li>k = 10 kcal/mol (0.2 Å spacing)</li>
-<li>k = 2.5 kcal/mol (1 Å spacing)</li>
-<li>25 ns/window</li>
-</ul>
+chmod +x rmsd_full.sh  
+./rmsd_full.sh  
 
-<pre>
-cpptraj → dis.dat
-./target.sh
-./rst7-input.sh
-./name-change.sh
-./job-us-run.sh
-</pre>
+pip install fastdtw scipy seaborn matplotlib numpy  
+python DTW_Clustering.py  
 
-<pre>
-./npwham-run.sh
-python pmf-plot.py
-</pre>
+---
 
-<h2>G. Halogen Bond Analysis</h2>
+# 🪟 F. Umbrella Sampling
 
-<p>Criteria: distance + angle (140°–180°)</p>
+Optimal:
+- Early: k=10, spacing=0.2 Å  
+- Late: k=2.5, spacing=1 Å  
 
-<pre>
-./halogen-bond.sh → halo.out
-./halo-amino.sh
-./halo-count.sh
-python halo-plot-data.py
-python halo-along-pathway.py
-</pre>
+25 ns per window
 
-<h3>QM Validation</h3>
-<ul>
-<li>DFT + NBO</li>
-<li>E(2) ≥ 0.5 kcal/mol</li>
-</ul>
+Run:
+target.sh  
+rst7-input.sh  
+name-change.sh  
+job-us-run.sh  
 
-<h2>H. Hydrogen Bond Analysis</h2>
-<ul>
-<li>D–H ≤ 1.2 Å</li>
-<li>D–A ≤ 3.0 Å</li>
-<li>Angle ≥ 150°</li>
-</ul>
+PMF:
+./npwham-run.sh  
+python pmf-plot.py  
 
-<h2>I. Free Energy Contributions</h2>
-<ul>
-<li>Solvation</li>
-<li>Halogen bonding</li>
-<li>Hydrogen bonding</li>
-<li>Steric crowding</li>
-</ul>
+---
 
-<h2>J. Substrate Binding Simulation</h2>
+# 🧪 G. Halogen Bond Analysis
 
-<p>Substrates placed 50 Å away.</p>
+Criteria:
+- Distance cutoff  
+- Angle 140°–180°  
 
-<h3>Residue Interaction Network</h3>
-<ul>
-<li>>4 heavy atom contacts within 6 Å</li>
-<li>>80% persistence</li>
-</ul>
+Run:
+./halogen-bond.sh  
 
-<h3>TICA + MSM Workflow</h3>
-<pre>
-feature_selection.py → lagfind.py → VAMP.py → feature_filter.py → lagfind_filter.py → MSM.py → kmeans.py → CK.py → TPT.py
-</pre>
+Additional:
+halo-amino.sh  
+halo-count.sh  
+halo-plot-data.py  
+halo-along-pathway.py  
 
-<p>
-Transition network identifies pathway from unbound to pre-bound state.
-</p>
+QM Validation includes NBO, DFT, ALMO-EDA.
 
-<div class="footer">
-Thank you. Please cite appropriately.
-</div>
+---
 
-</div>
+# 💧 H. Hydrogen Bond Analysis
 
-</body>
-</html>
+Criteria:
+- Donor–H ≤ 1.2 Å  
+- Donor–Acceptor ≤ 3.0 Å  
+- Angle ≥ 150°  
+
+---
+
+# 🔥 I. Free Energy Contributions
+- Solvation  
+- Halogen bonding  
+- Hydrogen bonding  
+- Sterics  
+
+---
+
+# 🧬 J. Substrate Binding Simulations
+
+- Substrates placed 50 Å away  
+
+## 🌐 RIN
+- Nodes: residues  
+- Edges: heavy atom contacts  
+- Persistence ≥ 80%  
+
+## 🧠 TICA Workflow
+feature_selection.py → lagfind.py → VAMP.py → feature_filter.py → lagfind_filter.py → MSM.py → kmeans.py → CK.py → TPT.py  
+
+---
+
+# Final Note
+Please cite appropriately if you use this workflow.
