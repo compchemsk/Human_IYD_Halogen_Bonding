@@ -276,8 +276,19 @@ x-y-z.py ----> plot QM verfied halogen bonding
 <br>
 <br>
 
-H. One interesting question comes at this stage. From ensemble of structures obtained from umbrella sampling simulation, we first identify structures which show halogen bonding interaction based on structural criteria followed by QM validation of the obtained halogen bonding interactions. The QM-based validation seems important for cases like Cl-Tyr where false positive results often arise from only structural validation. However, even with those true halogen bonding interactions, how many of them contribute to the free-energy landscape of the protein-ligand unbinding event. On the previously contructed free-energy landscape, we identify the contributions coming from substrate solvation, halogen bonding, hydrogen bonding, and steric crowding. The in-house codes are provided in the FES_Halo_Bond directory. User can make the codes executable and run them.
+H. Hydrogen bonding interactions between a protein and its substrate are typically identified using geometric criteria based on distances and angles between the involved atoms. In this approach, a hydrogen bond is considered to exist when specific cutoff values are satisfied: the distance between the donor atom and the hydrogen atom must be less than or equal to 1.2 Å, the distance between the donor and acceptor atoms must not exceed 3.0 Å, and the angle formed by the donor–hydrogen–acceptor atoms must be at least 150°. These parameters ensure that only strong and directionally favorable interactions are classified as hydrogen bonds. The codes to calculate residues contributing to hydrogen bonding over the progressive unbinding and percentage occupancy of those residues are given in the Hydrogen_Bond directory.
 
 <br>
 <br>
 <br>
+
+
+
+I. One interesting question comes at this stage. From ensemble of structures obtained from umbrella sampling simulation, we first identify structures which show halogen bonding interaction based on structural criteria followed by QM validation of the obtained halogen bonding interactions. The QM-based validation seems important for cases like Cl-Tyr where false positive results often arise from only structural validation. However, even with those true halogen bonding interactions, how many of them contribute to the free-energy landscape of the protein-ligand unbinding event. On the previously contructed free-energy landscape, we identify the contributions coming from substrate solvation, halogen bonding, hydrogen bonding, and steric crowding. The in-house codes are provided in the FES_Halo_Bond directory. User can make the codes executable and run them.
+
+<br>
+<br>
+<br>
+
+
+
