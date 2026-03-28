@@ -94,3 +94,38 @@ python k_F_plot.py
 
 <br>
 
+
+<br>
+<br>
+<br>
+
+4. PMF distribution:
+<br>
+To obtain PMF distribution, run the following codes in the same directory as before.
+<br>
+
+for np in {0.1,0.25,0.5,1,2,3,4}
+<br>
+do
+<br>
+cp k_PMF.sh k${np}
+<br>
+cd k${np}
+<br>
+chmod +x k_PMF.sh
+<br>
+./k_PMF.sh
+<br>
+cd ../
+<br>
+done
+
+<br>
+<br>
+
+After the above code, run:
+<br>
+python k_PMF_plot.py
+
+<br>
+
