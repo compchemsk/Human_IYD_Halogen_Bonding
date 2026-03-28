@@ -2,72 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Human IYD Halogen Bonding Workflow</title>
+<title>Human_IYD_Halogen_Bonding</title>
 
-<style>
-body {
-    font-family: "Segoe UI", Arial, sans-serif;
-    line-height: 1.7;
-    margin: 0;
-    background: #f5f7fa;
-    color: #2c3e50;
-}
-
-.container {
-    max-width: 1100px;
-    margin: auto;
-    padding: 40px;
-    background: white;
-    box-shadow: 0 0 15px rgba(0,0,0,0.08);
-}
-
-h1 {
-    text-align: center;
-    color: #1a5276;
-}
-
-h2 {
-    border-left: 6px solid #3498db;
-    padding-left: 10px;
-    margin-top: 40px;
-}
-
-h3 {
-    color: #2e86c1;
-}
-
-code, pre {
-    background: #eef3f7;
-    padding: 10px;
-    display: block;
-    border-radius: 6px;
-    overflow-x: auto;
-}
-
-.highlight {
-    background: #eaf2f8;
-    padding: 10px;
-    border-left: 4px solid #3498db;
-}
-
-ul {
-    margin-left: 20px;
-}
-
-.footer {
-    text-align: center;
-    margin-top: 40px;
-    font-weight: bold;
-}
-</style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-<h1>Human IYD Halogen Bonding Study</h1>
 
 <p>
 Human IYD shows no halogen bonding in crystal structures, yet kinetics reveal strong halogen-dependent binding. 
