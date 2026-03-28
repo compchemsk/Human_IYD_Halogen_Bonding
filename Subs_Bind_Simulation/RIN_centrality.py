@@ -3,28 +3,24 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 from itertools import combinations
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 from MDAnalysis.lib.distances import distance_array
 
 # =========================
 # USER INPUT
 # =========================
-topology_file = "I-Tyr-binding.parm7"
-trajectory_file = "traj-I-Tyr.xtc"
+topology_file = "4ttc-unbiased-fmnh2-ityr.parm7"
+trajectory_file = "sim1.nc"
 
 DIST_CUTOFF = 6.0
 ATOM_PAIR_THRESHOLD = 4
 EDGE_THRESHOLD = 80.0
-NPROC = 40  # number of processors
+NPROC = 40
 
 # =========================
-# GLOBAL WORKER FUNCTION
+# WORKER FUNCTION
 # =========================
 def process_frames(frame_indices):
-    """
-    Each worker loads its own Universe.
-    and processes a chunk of frames.
-    """
     u = mda.Universe(topology_file, trajectory_file)
     protein = u.select_atoms("protein")
     residues = protein.residues
@@ -59,6 +55,7 @@ def process_frames(frame_indices):
 # =========================
 if __name__ == "__main__":
 
+    # Load once to get system info
     u = mda.Universe(topology_file, trajectory_file)
     protein = u.select_atoms("protein")
     residues = protein.residues
@@ -69,10 +66,10 @@ if __name__ == "__main__":
     print(f"Total frames: {n_frames}")
     print(f"Using {NPROC} processors")
 
-    # Split frames into chunks
+    # Split frames
     frame_chunks = np.array_split(range(n_frames), NPROC)
 
-    # Parallel execution
+    # Parallel run
     with Pool(processes=NPROC) as pool:
         results = pool.map(process_frames, frame_chunks)
 
@@ -105,13 +102,52 @@ if __name__ == "__main__":
     print(f"Edges after threshold: {G.number_of_edges()}")
 
     # =========================
-    # STRONGEST PATH (N → C)
+    # PREPARE WEIGHTS (distance)
+    # =========================
+    for u_, v_, d in G.edges(data=True):
+        d["inv_weight"] = 100.0 - d["weight"]
+
+    # =========================
+    # CENTRALITY ANALYSIS
+    # =========================
+    print("\nComputing centrality measures...")
+
+    deg_cent = nx.degree_centrality(G)
+    clo_cent = nx.closeness_centrality(G, distance="inv_weight")
+    bet_cent = nx.betweenness_centrality(G, weight="inv_weight", normalized=True)
+
+    print("\nResidue Centrality Measures (resid starts from 1):\n")
+    print(f"{'Resid':>6} {'Resname':>8} {'Degree':>12} {'Closeness':>12} {'Betweenness':>15}")
+
+    for node in G.nodes:
+        resid = G.nodes[node]["resid"]
+        resname = G.nodes[node]["resname"]
+
+        print(f"{resid:6d} {resname:>8} {deg_cent[node]:12.6f} {clo_cent[node]:12.6f} {bet_cent[node]:15.6f}")
+
+    # =========================
+    # TOP RESIDUES
+    # =========================
+    def top_n(dictionary, n=10):
+        return sorted(dictionary.items(), key=lambda x: x[1], reverse=True)[:n]
+
+    print("\nTop 10 residues by Betweenness Centrality:")
+    for node, val in top_n(bet_cent):
+        print(f"Resid {G.nodes[node]['resid']} ({G.nodes[node]['resname']}): {val:.6f}")
+
+    print("\nTop 10 residues by Closeness Centrality:")
+    for node, val in top_n(clo_cent):
+        print(f"Resid {G.nodes[node]['resid']} ({G.nodes[node]['resname']}): {val:.6f}")
+
+    print("\nTop 10 residues by Degree Centrality:")
+    for node, val in top_n(deg_cent):
+        print(f"Resid {G.nodes[node]['resid']} ({G.nodes[node]['resname']}): {val:.6f}")
+
+    # =========================
+    # DOMINANT PATH (N → C)
     # =========================
     start_node = 0
     end_node = n_res - 1
-
-    for u_, v_, d in G.edges(data=True):
-        d["inv_weight"] = 100.0 - d["weight"]
 
     try:
         path = nx.shortest_path(G, source=start_node, target=end_node, weight="inv_weight")
@@ -127,9 +163,13 @@ if __name__ == "__main__":
     plt.figure(figsize=(10, 8))
     pos = nx.spring_layout(G, seed=42)
 
+    # Nodes
     nx.draw_networkx_nodes(G, pos, node_color="blue", node_size=200)
+
+    # All edges (grey)
     nx.draw_networkx_edges(G, pos, edge_color="grey", width=1)
 
+    # Highlight dominant path (black thick)
     if path:
         path_edges = list(zip(path[:-1], path[1:]))
         nx.draw_networkx_edges(
@@ -139,10 +179,11 @@ if __name__ == "__main__":
             width=3
         )
 
+    # Labels
     labels = {i: G.nodes[i]["resid"] for i in G.nodes}
     nx.draw_networkx_labels(G, pos, labels, font_size=8)
 
-    plt.title("Parallel Residue Interaction Network (RIN)")
+    plt.title("Residue Interaction Network (RIN)")
     plt.axis("off")
     plt.tight_layout()
     plt.show()

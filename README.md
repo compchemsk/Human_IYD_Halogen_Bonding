@@ -290,4 +290,10 @@ I. One interesting question comes at this stage. From ensemble of structures obt
 <br>
 <br>
 
-J. Substrate Binding Large-timescale Unbiased Simulations: To study the way how enzyme recognizes its substrate, we place two substrates (corresponding to two active sites of the enzyme) 50 A away from the enzyme. The corresponding parameter files are kept in the Subs_Bind_Simulation directory. 
+J. Substrate Binding Large-timescale Unbiased Simulations: To investigate how the enzyme recognizes its substrate, two substrate molecules—corresponding to the two active sites—are initially placed 50 Å away from the enzyme. The associated parameter files for this setup are provided in the Subs_Bind_Simulation directory.
+
+A residue interaction network (RIN) is then constructed from the resulting molecular dynamics trajectory. Each residue of the protein is treated as a node, and only heavy (non-hydrogen) atoms are considered. For every frame, two residues are defined to be in contact if more than four heavy atom pairs lie within 6 Å. Over the full trajectory, the percentage of frames in which each residue pair remains in contact is calculated. An edge is included in the final network only if this contact persists in more than 80% of frames, with the edge weight representing the corresponding percentage.
+
+To characterize the network, centrality measures are computed. Degree centrality reflects how many direct interactions a residue has, indicating locally connected or structurally important residues. Closeness centrality measures how efficiently a residue can communicate with the rest of the network, highlighting centrally located residues. Betweenness centrality identifies residues that act as bridges along shortest communication paths, often associated with key functional or allosteric roles.
+
+For visualization, residues are shown as blue spheres and edges as grey lines. The dominant interaction pathway from the N-terminal to the C-terminal residue—based on strongest interactions—is highlighted using thick black edges, and the corresponding residue indices (renumbered from 1) are reported. This combined approach enables identification of stable interactions, key communication pathways, and functionally important residues involved in substrate recognition.
