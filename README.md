@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Human_IYD_Halogen_Bonding</title>
 
 </head>
 
