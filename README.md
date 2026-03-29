@@ -1,7 +1,7 @@
 # 🧬 Human_IYD_Halogen_Bonding
 
 Human IYD shows **no halogen bonding in crystal structures**, yet kinetics reveal **strong halogen-dependent binding**. Heavier halotyrosines bind tighter and associate faster than lighter halotyrosines, while *k_off* changes little—suggesting halogens mainly boost *k_on* via **transient interactions**. Static structures miss these dynamic effects.  
-📌 Citation: S. Karmakar and S. Mishra, J. Chem. Inf. Model., 2026 (under review)
+📌 Citation: S. Karmakar and S. Mishra, J. Chem. Inf. Model., 2026 (under review) (Cite: https://doi.org/10.5281/zenodo.19310318)
 
 ---
 
