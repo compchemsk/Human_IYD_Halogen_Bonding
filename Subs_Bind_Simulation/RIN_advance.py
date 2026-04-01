@@ -102,7 +102,7 @@ def compute_centrality(G, outfile):
         d["inv_weight"] = 1.0 / d["weight"]
 
     bet = nx.betweenness_centrality(G, weight='inv_weight', normalized=True)
-    clo = nx.closeness_centrality(G, weight='inv_weight')
+    clo = nx.closeness_centrality(G, distance='inv_weight')
     deg = nx.degree_centrality(G)
 
     with open(outfile, "w") as f:
