@@ -3,10 +3,8 @@ import numpy as np
 import networkx as nx
 from multiprocessing import Pool, cpu_count
 import argparse
+import matplotlib.pyplot as plt
 
-# -----------------------------
-# STEP 1: Read files
-# -----------------------------
 def load_system(pdb_file, traj_file):
     u = mda.Universe(pdb_file, traj_file)
     protein = u.select_atoms("protein")
@@ -20,10 +18,6 @@ def load_system(pdb_file, traj_file):
 
     return u, residues
 
-
-# -----------------------------
-# STEP 2: Get heavy sidechain atoms
-# -----------------------------
 def get_sidechain_heavy_atoms(residues):
     res_atoms = []
     for res in residues:
@@ -31,10 +25,6 @@ def get_sidechain_heavy_atoms(residues):
         res_atoms.append(atoms)
     return res_atoms
 
-
-# -----------------------------
-# STEP 3: Frame-wise matrix
-# -----------------------------
 def process_frame(args):
     frame_index, u, res_atoms = args
     u.trajectory[frame_index]
@@ -61,10 +51,6 @@ def process_frame(args):
 
     return matrix
 
-
-# -----------------------------
-# STEP 4–6: Average matrix
-# -----------------------------
 def compute_average_matrix(u, res_atoms, nproc):
 
     n_frames = len(u.trajectory)
@@ -79,10 +65,6 @@ def compute_average_matrix(u, res_atoms, nproc):
 
     return avg_matrix
 
-
-# -----------------------------
-# STEP 7–9: Build matrices
-# -----------------------------
 def build_final_matrices(mat_prefinal):
 
     mat_final = (mat_prefinal > 0.7).astype(int)
@@ -92,10 +74,6 @@ def build_final_matrices(mat_prefinal):
 
     return mat_final, mat_rin
 
-
-# -----------------------------
-# STEP 10: Build graph
-# -----------------------------
 def build_graph(residues, mat_final, mat_rin):
 
     G = nx.Graph()
@@ -119,14 +97,12 @@ def build_graph(residues, mat_final, mat_rin):
 
     return G, positions
 
-
-# -----------------------------
-# STEP 11: Centrality
-# -----------------------------
 def compute_centrality(G, outfile):
+    for u_, v_, d in G.edges(data=True):
+        d["inv_weight"] = 1.0 / d["weight"]
 
-    bet = nx.betweenness_centrality(G, weight='weight')
-    clo = nx.closeness_centrality(G)
+    bet = nx.betweenness_centrality(G, weight='inv_weight', normalized=True)
+    clo = nx.closeness_centrality(G, weight='inv_weight')
     deg = nx.degree_centrality(G)
 
     with open(outfile, "w") as f:
@@ -134,17 +110,40 @@ def compute_centrality(G, outfile):
         for node in G.nodes():
             f.write(f"{node}\t{bet[node]:.4f}\t{clo[node]:.4f}\t{deg[node]:.4f}\n")
 
-
-# -----------------------------
-# STEP 12: Save graph
-# -----------------------------
 def save_graph(G, outfile):
     nx.write_weighted_edgelist(G, outfile)
 
+def plot_graph(G, positions):
 
-# -----------------------------
-# MAIN
-# -----------------------------
+    plt.figure(figsize=(8, 6))
+
+    # Extract edge weights
+    edges = G.edges(data=True)
+    weights = [d['weight'] for (_, _, d) in edges]
+    ##positions = nx.spring_layout(G, weight='weight')
+
+    # Normalize edge thickness for visibility
+    if len(weights) > 0:
+        max_w = max(weights)
+        widths = [3 * (w / max_w) for w in weights]
+    else:
+        widths = []
+
+    # Draw nodes
+    nx.draw_networkx_nodes(G, positions, node_size=100)
+
+    # Draw edges
+    nx.draw_networkx_edges(G, positions, width=widths)
+
+    # Optional: labels
+    nx.draw_networkx_labels(G, positions, font_size=6)
+
+    plt.axis('off')
+    plt.tight_layout()
+    plt.show()
+
+# Main Part of the Algorithm
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--pdb", required=True)
@@ -166,9 +165,8 @@ def main():
     compute_centrality(G, "centrality.txt")
 
     save_graph(G, "graph.edgelist")
-
-    print("Done!")
-
+    plot_graph(G, positions)
+    print("Residue Interaction Network Obtained. QSM Lab @ IITKgp wishes you a good day!")
 
 if __name__ == "__main__":
     main()
